@@ -1,5 +1,6 @@
 # SlimFramework
 The Slim Framework is a framework I have developed for my preferred programming paradigms.
+Currently, the framework is written in Kotlin targeting the Java Virtual Machine. I also have a .NET Core version far along in development I will release soon.
 
 
 The first major component is a backend. The backend component is a class designed to listen for service requests in JSON format and insert them into a list, whose reference is copied into the backend at instantiation. This list is then filled with IncomingRequests (classes containing a JSON and socket) which can then be processed in a user defined switch class (who also has the list reference copied into) which does a basic parse first to determine the service, then based on the service/routing number it can be fully parsed into its respective request. This request along with the socket can then be passed into a service call.  This offloads the need to write a bunch of low-level boilerplate code just to receive service calls.
