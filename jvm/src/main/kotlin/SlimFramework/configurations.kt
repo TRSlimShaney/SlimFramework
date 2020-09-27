@@ -7,7 +7,7 @@ private val classname = "FrwConfigurations"
 private val directory = "configs"
 var file = "config.cfg"
 
-private fun loadConfig() {
+fun frwLoadConfig() {
     val routine = "loadConfig"
     val folder = File(directory)
 
@@ -41,7 +41,7 @@ private fun loadConfig() {
     }
 }
 
-fun putConfig(key: String, value: String): Int {
+fun frwPutConfig(key: String, value: String): Int {
     val routine = "putConfig"
 
     if (!configs.containsKey(key)) {
@@ -55,6 +55,6 @@ fun putConfig(key: String, value: String): Int {
     return STA_NORMAL
 }
 
-fun getConfig(key: String): String {
+fun frwGetConfig(key: String): String {
     return configs.getOrDefault(key, "")
 }

@@ -35,3 +35,7 @@ fun frwIsNotBlankString(empty: String): Boolean {
 fun frwToBytes(bytes: String): ByteArray {
     return bytes.toByteArray()
 }
+
+fun frwExceptionToString(e: Exception): String {
+    return "Exception: ${e.message}"
+}

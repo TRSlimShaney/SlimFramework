@@ -97,7 +97,7 @@ private class DBSwitch(private val ipc: FrwIPC, private val queue: MutableList<I
     }
 
     private fun serviceSwitch(client: Socket, json: String) {
-        val req = frwJSONParse(json, DBRequest::class.java)
+        val req = frwFromJSON(json, DBRequest::class.java)
         var status = STA_NORMAL
         var record = ""
 
@@ -300,13 +300,13 @@ private class Heap(private val name: String, private val saveToFile: Boolean, le
 }
 
 fun <T> frwParseDBRecord(rsp: DBResponse, type: Class<T>): T {
-    return frwJSONParse(rsp.record, type)
+    return frwFromJSON(rsp.record, type)
 }
 
 fun <T> frwParseDBTable(rsp: DBTableResponse, type: Class<T>): MutableMap<String, T> {
     val result = mutableMapOf<String, T>()
     rsp.table.forEach {
-        result[it.key] = frwJSONParse(it.value, type)
+        result[it.key] = frwFromJSON(it.value, type)
     }
     return result
 }

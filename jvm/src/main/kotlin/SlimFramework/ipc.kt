@@ -19,7 +19,7 @@ fun frwAddSocketMapping(name: String, address: String, port: Int): Int {
 fun frwSendResponse(obj: Any, client: Socket): Int {
     val routine = "FrwSendResponse"
     debug(classname, routine,"Entering function")
-    val json = frwJSONStringify(obj)
+    val json = frwToJSON(obj)
     debug(classname, routine,"Sending response: $json")
     val outstream = DataOutputStream(client.getOutputStream())
     try {
@@ -28,7 +28,7 @@ fun frwSendResponse(obj: Any, client: Socket): Int {
         client.close()
     }
     catch(e: Exception) {
-        error(classname, routine,"Sending response failed: ${e.message}")
+        error(classname, routine, frwExceptionToString(e))
         return STA_FAIL
     }
     return STA_NORMAL
@@ -37,7 +37,7 @@ fun frwSendResponse(obj: Any, client: Socket): Int {
 fun frwSendWithNoResponse(obj: Any, address: String, port: Int): Int {
     val routine = "FrwSendRequest"
     debug(classname, routine,"Entering function")
-    val rsp = SendMessage(frwJSONStringify(obj), address, port, 5000)
+    val rsp = SendMessage(obj, address, port, 5000)
     if (rsp.isBlank()) {
         return STA_FAIL
     }
@@ -47,8 +47,8 @@ fun frwSendWithNoResponse(obj: Any, address: String, port: Int): Int {
 fun <T> frwSendWithResponse(obj: Any, address: String, port: Int, type: Class<T>): T {
     val routine = "FrwSendWithResponse"
     debug(classname, routine,"Entering function")
-    val rspjson = SendMessage(frwJSONStringify(obj), address, port, 0)
-    return frwJSONParse(rspjson, type)
+    val rspjson = SendMessage(obj, address, port, 0)
+    return frwFromJSON(rspjson, type)
 }
 
 fun frwSendWithNoResponse(name: String, obj: Any): Int {
@@ -56,7 +56,7 @@ fun frwSendWithNoResponse(name: String, obj: Any): Int {
     debug(classname, routine, "Entering function")
     if (socketmap.containsKey(name)) {
         val pair = socketmap[name]
-        val rsp = SendMessage(frwJSONStringify(obj), pair!!.first, pair.second, 5000)
+        val rsp = SendMessage(obj, pair!!.first, pair.second, 5000)
         if (rsp.isBlank()) {
             return STA_FAIL
         }
@@ -74,21 +74,21 @@ fun <T> frwSendWithResponse(name: String, obj: Any, type: Class<T>): T {
     var rsp = ""
     if (socketmap.containsKey(name)) {
         val pair = socketmap[name]
-        rsp = SendMessage(frwJSONStringify(obj), pair!!.first, pair.second, 0)
+        rsp = SendMessage(obj, pair!!.first, pair.second, 0)
     }
     else {
         error(classname, routine, "Name \"$name\" not found in socket map")
     }
-    return frwJSONParse(rsp, type)
+    return frwFromJSON(rsp, type)
 }
 
-fun frwSendWithResponse(name: String, json: String): String {
+fun frwSendWithResponse(name: String, obj: Any): String {
     val routine = "FrwSendWithResponse"
     debug(classname, routine, "Entering function")
     var rsp = ""
     if (socketmap.containsKey(name)) {
         val pair = socketmap[name]
-        rsp = SendMessage(json, pair!!.first, pair.second, 0)
+        rsp = SendMessage(obj, pair!!.first, pair.second, 0)
     }
     else {
         error(classname, routine, "Name \"$name\" not found in socket map")
@@ -96,20 +96,32 @@ fun frwSendWithResponse(name: String, json: String): String {
     return rsp
 }
 
-private fun SendMessage(sendjson: String, address: String, port: Int, timeout: Int): String {
+private fun SendMessage(obj: Any, address: String, port: Int, timeout: Int): String {
     val routine = "FrwSendMessage"
     debug(classname, routine,"Entering function")
-    debug(classname, routine,"Sending message: $sendjson")
     var rspjson = StringBuilder()
     try {
         val client = Socket(address, port)
         client.soTimeout = timeout
         val outstream = DataOutputStream(client.getOutputStream())
-        outstream.writeUTF(sendjson)
+        when (obj) {
+            is String -> {
+                outstream.writeUTF(obj)
+            }
+            is StringBuilder -> {
+                outstream.write(frwToBytes(obj.toString()))
+            }
+            is ByteArray -> {
+                outstream.write(obj)
+            }
+            else -> {
+                outstream.writeUTF(frwToJSON(obj))
+            }
+        }
         outstream.flush()
         client.shutdownOutput()
 
-        Thread.sleep(25)
+        Thread.sleep(10)
 
         val scanner = Scanner(client.getInputStream())
         while (scanner.hasNextLine()) {
@@ -119,7 +131,7 @@ private fun SendMessage(sendjson: String, address: String, port: Int, timeout: I
         client.close()
     }
     catch (e: Exception) {
-        error(classname, routine,"Sending request failed: ${e.message}")
+        error(classname, routine, frwExceptionToString(e))
     }
     return rspjson.toString()
 }

@@ -26,12 +26,12 @@ class FrwSemaphore(val capacity: Int, val name: String) {
     }
 }
 
-fun frwJSONStringify(obj: Any): String {
+fun frwToJSON(obj: Any): String {
     val gson = Gson()
     return gson.toJson(obj)
 }
 
-fun <T> frwJSONParse(json: String, type: Class<T>): T {
+fun <T> frwFromJSON(json: String, type: Class<T>): T {
     val gson = Gson()
     return gson.fromJson(json, type);
 }

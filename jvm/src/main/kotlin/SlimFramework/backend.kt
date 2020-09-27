@@ -45,7 +45,7 @@ class FrwBackend(private val port: Int, private val jsonqueue: MutableList<Incom
             }
             debug(classname, routine, "Data received: ${json}")
         } catch (e: Exception) {
-            error(classname, routine, "${e.message}")
+            error(classname, routine, frwExceptionToString(e))
             client.close()
             throw e
         }
@@ -68,7 +68,7 @@ class FrwBackend(private val port: Int, private val jsonqueue: MutableList<Incom
                 debug(classname, routine, "Blank request received")
             }
         } catch (e: Exception) {
-            error(classname, routine, "${e.message}")
+            error(classname, routine, frwExceptionToString(e))
             throw e
         }
     }
