@@ -64,13 +64,13 @@ class FrwCUPSPrintJob {
         this.FileOrName = false
     }
 
-    fun PrintFile() {
+    fun printFile() {
         if (!FileOrName) {
             StartProcess(Filename)
         }
     }
 
-    fun PrintBytes() {
+    fun printBytes() {
         if (FileOrName) {
             var name = "${UUID.randomUUID()}.bin"
             var path = Paths.get(".\\${name}")

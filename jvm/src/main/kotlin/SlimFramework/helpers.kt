@@ -4,28 +4,34 @@ package SlimFramework
 
 //  based on int return, did the function succeed?
 fun frwSUCCESS(status: Int): Boolean {
-    if (status >= 0) {
-        return true
-    }
-    return false
+    return status >= 0
 }
 
 //  based on int return, did the function fail?
 fun frwFAILURE(status: Int): Boolean {
-    if (frwSUCCESS(status)) {
-        return false
-    }
-    return true
+    return !frwSUCCESS(status)
 }
 
 //  streamlines logging errors if functions fail
-fun frwFCALL(routine: String, classname: String, logger: FrwLogger, status: Int): Boolean {
+fun frwFCALL(routine: String, classname: String, status: Int): Boolean {
     if (frwSUCCESS(status)) {
-        logger.debug(classname, routine, "FCALL succeeded with status ${frwGetStatusName(status)}")
+        debug(classname, routine, "FCALL succeeded with status ${frwGetStatusName(status)}")
         return true
     }
     else {
-        logger.error(classname, routine, "FCALL FAILED with status ${frwGetStatusName(status)}")
+        error(classname, routine, "FCALL FAILED with status ${frwGetStatusName(status)}")
     }
     return false
+}
+
+fun frwIsBlankString(empty: String): Boolean {
+    return empty.isNullOrBlank()
+}
+
+fun frwIsNotBlankString(empty: String): Boolean {
+    return !frwIsBlankString(empty)
+}
+
+fun frwToBytes(bytes: String): ByteArray {
+    return bytes.toByteArray()
 }

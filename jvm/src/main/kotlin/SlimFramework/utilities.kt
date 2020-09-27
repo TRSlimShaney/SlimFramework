@@ -13,13 +13,15 @@ class FrwSemaphore(val capacity: Int, val name: String) {
 
     //  acquire a lock on the semaphore
     fun lock() {
-        //val routine = "lock"
+        val routine = "lock"
+        debug(classname, routine, "Locking $name semaphore")
         s.acquireUninterruptibly()
     }
 
     //  release the lock on the semaphore
     fun unlock() {
-        //val routine = "unlock"
+        val routine = "unlock"
+        debug(classname, routine, "Unlocking $name semaphore")
         s.release()
     }
 }

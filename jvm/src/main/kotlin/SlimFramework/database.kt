@@ -115,7 +115,7 @@ private class DBSwitch(private val ipc: FrwIPC, private val queue: MutableList<I
                 DB_GETTABLE -> {
                     val table = db.getRecordsOfTable(req.table)
                     val rsp = DBTableResponse(status, table)
-                    ipc.SendResponse(rsp, client)
+                    frwSendResponse(rsp, client)
                     return
                 }
                 DB_GETRECORD -> {
@@ -133,7 +133,7 @@ private class DBSwitch(private val ipc: FrwIPC, private val queue: MutableList<I
             status = STA_BADREQ
         }
         val rsp = DBResponse(status, record)
-        ipc.SendResponse(rsp, client)
+        frwSendResponse(rsp, client)
     }
 
     private fun validateRequest(req: DBRequest): Boolean {
@@ -162,7 +162,6 @@ private class Heap(private val name: String, private val saveToFile: Boolean, le
 
     private val classname = "($name)FrwDatabase"
     private val db = mutableMapOf<String, MutableMap<String, String>>()
-    private val logger = FrwLogger(level, classname)
     private val directory = "dbfiles"
     private val delimiter = "[][][]"
 
@@ -187,7 +186,7 @@ private class Heap(private val name: String, private val saveToFile: Boolean, le
                     putRecord(split[0], split[1], split[2])
                 }
                 else {
-                    logger.error(classname, routine, "dbfile line not formatted as expected: $it")
+                    error(classname, routine, "dbfile line not formatted as expected: $it")
                 }
             }
         }
@@ -228,7 +227,7 @@ private class Heap(private val name: String, private val saveToFile: Boolean, le
         }
         else {
             if (db[table]!!.containsKey(key)) {
-                logger.error(classname, routine, "Table $table with key $key Already has record")
+                error(classname, routine, "Table $table with key $key Already has record")
                 return STA_KEYINUSE
             }
             db[table]!![key] = record
@@ -246,7 +245,7 @@ private class Heap(private val name: String, private val saveToFile: Boolean, le
             return result
         }
         val result = ""
-        logger.error(classname, routine, "Record in Table $table with key $key not found")
+        error(classname, routine, "Record in Table $table with key $key not found")
         return result
     }
 
@@ -275,7 +274,7 @@ private class Heap(private val name: String, private val saveToFile: Boolean, le
             }
             return STA_NORMAL
         }
-        logger.error(classname, routine, "No record found to swap")
+        error(classname, routine, "No record found to swap")
         return STA_NORECORD
     }
 
@@ -288,7 +287,7 @@ private class Heap(private val name: String, private val saveToFile: Boolean, le
             }
             return STA_NORMAL
         }
-        logger.error(classname, routine, "No record found to remove")
+        error(classname, routine, "No record found to remove")
         return STA_NORECORD
     }
 

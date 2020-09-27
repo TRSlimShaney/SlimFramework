@@ -9,7 +9,6 @@ class FrwBackend(private val port: Int, private val jsonqueue: MutableList<Incom
 
     private val classname = "($name)FrwBackend"
     private val server = ServerSocket(port)
-    private val logger = FrwLogger(level, "FrwBackend.LOG")
 
     init {
         //server.soTimeout = 5000
@@ -24,7 +23,7 @@ class FrwBackend(private val port: Int, private val jsonqueue: MutableList<Incom
         val routine = "serve"
         while (!server.isClosed) {
             val client = server.accept()
-            logger.debug(classname, routine, "Request accepted from ${client.remoteSocketAddress}")
+            debug(classname, routine, "Request accepted from ${client.remoteSocketAddress}")
             //  create a thread to handle this request
             thread(isDaemon = true, block = { receiveRequest(client) })
         }
@@ -35,7 +34,7 @@ class FrwBackend(private val port: Int, private val jsonqueue: MutableList<Incom
         val routine = "listenForJSON"
         var json = StringBuilder()
         try {
-            logger.debug(classname, routine, "Parsing data from ${client.remoteSocketAddress}")
+            debug(classname, routine, "Parsing data from ${client.remoteSocketAddress}")
             val scanner = Scanner(client.getInputStream())
             while (scanner.hasNextLine()) {
                 json.append(scanner.nextLine())
@@ -44,9 +43,9 @@ class FrwBackend(private val port: Int, private val jsonqueue: MutableList<Incom
             if (json.isNotEmpty()) {
                 json = json.delete(0, 2)
             }
-            logger.debug(classname, routine, "Data received: ${json}")
+            debug(classname, routine, "Data received: ${json}")
         } catch (e: Exception) {
-            logger.error(classname, routine, "${e.message}")
+            error(classname, routine, "${e.message}")
             client.close()
             throw e
         }
@@ -62,14 +61,14 @@ class FrwBackend(private val port: Int, private val jsonqueue: MutableList<Incom
             if (!json.isNullOrBlank()) {
                 //  json is not null or blank
                 //  add this request and the socket to the queue
-                logger.debug(classname, routine, "Adding json to queue..")
+                debug(classname, routine, "Adding json to queue..")
                 jsonqueue.add(IncomingRequest(json, client))
             } else {
                 //  json was null or blank
-                logger.debug(classname, routine, "Blank request received")
+                debug(classname, routine, "Blank request received")
             }
         } catch (e: Exception) {
-            logger.error(classname, routine, "${e.message}")
+            error(classname, routine, "${e.message}")
             throw e
         }
     }
