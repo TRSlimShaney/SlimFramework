@@ -11,9 +11,8 @@ class FrwDatabase(port: Int, name: String, saveToFile: Boolean, level: LoggingLe
 
     private val queue = mutableListOf<IncomingRequest>()
     private val backend = FrwBackend(port, queue, name, level)
-    private val ipc = FrwIPC(name, level)
     private val dbi = DatabaseInterface(name, saveToFile, level)
-    private val switch = DBSwitch(ipc, queue, dbi)
+    private val switch = DBSwitch(queue, dbi)
 
     fun start() {
         thread(isDaemon = true, block = { run() })
@@ -81,7 +80,7 @@ private class DatabaseInterface(name: String, saveToFile: Boolean, level: Loggin
     }
 }
 
-private class DBSwitch(private val ipc: FrwIPC, private val queue: MutableList<IncomingRequest>, private val db: DatabaseInterface) {
+private class DBSwitch(private val queue: MutableList<IncomingRequest>, private val db: DatabaseInterface) {
 
     fun processMessages() {
         while (true) {

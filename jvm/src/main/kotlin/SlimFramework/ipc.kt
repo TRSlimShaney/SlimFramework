@@ -136,10 +136,6 @@ private fun SendMessage(obj: Any, address: String, port: Int, timeout: Int): Str
     return rspjson.toString()
 }
 
-class FrwIPC(name: String, level: LoggingLevel) {
-
-}
-
 class DBRequest {
     var DB_CODE: Int
     var table: String
