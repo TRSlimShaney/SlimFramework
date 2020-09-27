@@ -13,4 +13,4 @@ The fourth major component is the IPC component. This works with the backend com
 
 The fifth major component is a logger. It's pretty basic, but it works.
 
-The sixth major component is a wrapper for the CUPS printing system CLI. It gives a object-oriented interface to most of CUPS' features, allowing printing of files specified by name or files already loaded as byte arrays.
+The sixth major component is a wrapper for the CUPS printing system CLI. It gives an object-oriented interface to most of CUPS' features, allowing printing of files specified by name or files already loaded as byte arrays.
