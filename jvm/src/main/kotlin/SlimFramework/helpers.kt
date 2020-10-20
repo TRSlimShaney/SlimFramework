@@ -52,7 +52,7 @@ fun <T>frwAreEqual(a: T, b: T): Boolean {
     return a == b
 }
 
-fun <T1, T2>frwNotEqual(a: Int, b: Int): Boolean {
+fun <T>frwNotEqual(a: T, b: T): Boolean {
     return !frwAreEqual(a, b)
 }
 
